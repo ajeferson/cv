@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 
 def median(filename, window):
@@ -8,39 +7,28 @@ def median(filename, window):
 
     image = cv2.imread(filename, 0)       # Input file
     output = cv2.imread(filename, 0)      # Output file
-    # image = np.array(
-    #     [
-    #         [1, 2, 3],
-    #         [1, 2, 3],
-    #         [1, 2, 3]
-    #     ]
-    # )
-    #
-    # output = np.array(
-    #     [
-    #         [1, 2, 3],
-    #         [1, 2, 3],
-    #         [1, 2, 3]
-    #     ]
-    # )
 
-    width, height = image.shape
+    height, width = image.shape
 
     for i in range(height):
+
         for j in range(width):
+
+            s = 0  # Sum
+            kr = 0  # Kernel Row
 
             # Emptying the counting array
             counting = [0 for _ in range(256)]
 
-            tb = max(i - n, 0)            # Top Bound
-            bb = min(i + n, height - 1)   # Bottom Bound
-            lb = max(j - n, 0)            # Left Bound
-            rb = min(j + n, width - 1)    # Right Bound
-
-            for k in range(tb, bb + 1):
-                for l in range(lb, rb + 1):
-                    index = image[k, l]
-                    counting[index] += 1
+            # Counting values
+            for k in range(i - n, i + n + 1):
+                kc = 0  # Kernel Column
+                for l in range(j - n, j + n + 1):
+                    if 0 <= k < height and 0 <= l < width:
+                        index = image[k, l]
+                        counting[index] += 1
+                    kc += 1
+                kr += 1
 
             # Sorting
             s = []
@@ -61,7 +49,6 @@ def median(filename, window):
 
     # Save to file
     cv2.imwrite('median_output_size_%d.png' % window, output)
-    # print output
 
 print 'Calculating...'
 median('lena.png', 9)
