@@ -34,20 +34,22 @@ def gaussian(filename, window, sigma):
     image = cv2.imread(filename, 0)       # Input file
     output = cv2.imread(filename, 0)      # Output file
 
-    width, height = image.shape
+    height, width = image.shape
 
     for i in range(height):
+
         for j in range(width):
 
-            tb = max(i - n, 0)            # Top Bound
-            bb = min(i + n, height - 1)   # Bottom Bound
-            lb = max(j - n, 0)            # Left Bound
-            rb = min(j + n, width - 1)    # Right Bound
             s = 0  # Sum
+            kr = 0  # Kernel Row
 
-            for k in range(tb, bb + 1):
-                for l in range(lb, rb + 1):
-                    s += image[k, l] * kernel[k - tb][l - lb]
+            for k in range(i - n, i + n + 1):
+                kc = 0  # Kernel Column
+                for l in range(j - n, j + n + 1):
+                    if 0 <= k < height and 0 <= l < width:
+                        s += image[k, l] * kernel[kr][kc]
+                    kc += 1
+                kr += 1
 
             output[i, j] = s
 

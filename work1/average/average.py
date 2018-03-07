@@ -1,5 +1,6 @@
 import cv2
 
+
 def average(filename, size):
 
     n = size / 2
@@ -12,14 +13,10 @@ def average(filename, size):
     for i in range(height):
         for j in range(width):
             s = 0  # Sum
-            kr = 0  # Kernel Row
             for k in range(i - n, i + n + 1):
-                kc = 0  # Kernel Column
                 for l in range(j - n, j + n + 1):
                     if 0 <= k < height and 0 <= l < width:
                         s += image[k, l]
-                    kc += 1
-                kr += 1
 
             output[i, j] = s / (size ** 2)
 

@@ -14,21 +14,15 @@ def median(filename, window):
 
         for j in range(width):
 
-            s = 0  # Sum
-            kr = 0  # Kernel Row
-
             # Emptying the counting array
             counting = [0 for _ in range(256)]
 
             # Counting values
             for k in range(i - n, i + n + 1):
-                kc = 0  # Kernel Column
                 for l in range(j - n, j + n + 1):
                     if 0 <= k < height and 0 <= l < width:
                         index = image[k, l]
                         counting[index] += 1
-                    kc += 1
-                kr += 1
 
             # Sorting
             s = []
