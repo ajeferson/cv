@@ -1,6 +1,7 @@
 import cv2
 from moore import moore_boundary
 from chain_code import chain_code
+from pre_processing import read_numbers, Number
 
 
 def max_diameter(image, d):
@@ -88,9 +89,48 @@ def direction_sum(chain):
         s += int(c)
     return s
 
-img = cv2.imread('images/0/0.png', 0)
-output, path = moore_boundary(img)
-print path
-chain = chain_code(img, 4)
-print chain
-print direction_sum(chain)
+
+class DataPoint:
+
+    def __init__(self, number):
+        self.image = number.image
+        self.y = number.number
+        self.width = -1
+        self.height = -1
+        self.eccentricity = -1
+        self.moore_length = -1
+        self.slopes = -1
+        self.direction_sum = -1
+
+    def fit(self):
+        moore, path = moore_boundary(self.image)
+        self.width = max_diameter_horizontal(moore)[0]
+        self.height = max_diameter_vertical(moore)[0]
+        self.eccentricity = eccentricity(moore)
+        self.moore_length = boundary_length(path)
+
+        chain = chain_code(self.image, 4)
+        self.slopes = slopes(chain)
+        self.direction_sum = direction_sum(chain)
+
+    def __str__(self):
+        s = '----- %d -----\n' % self.y
+        s += 'Width: %d\n' % self.width
+        s += 'Height: %d\n' % self.height
+        s += 'Eccentricity: %f\n' % self.eccentricity
+        s += 'Moore Length: %d\n' % self.moore_length
+        s += 'Slopes: %d\n' % self.slopes
+        s += 'Direction Sum: %d\n' % self.direction_sum
+        return s
+
+# img = cv2.imread('images/0/0.png', 0)
+# output, path = moore_boundary(img)
+# print path
+# chain = chain_code(img, 4)
+# print chain
+# print direction_sum(chain)
+numbers = read_numbers(1, 35)
+data_points = [DataPoint(n) for n in numbers]
+for point in data_points:
+    point.fit()
+print data_points[0]

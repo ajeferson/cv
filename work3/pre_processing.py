@@ -68,6 +68,6 @@ def save_numbers(nnumbers):
         number.save()
 
 
-numbers = read_numbers(-1, 35)
-save_numbers(numbers)
+# numbers = read_numbers(-1, 35)
+# save_numbers(numbers)
 
