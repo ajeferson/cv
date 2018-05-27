@@ -133,6 +133,9 @@ def map_image(image, size, write):
     if write:
         cv2.imwrite('mapped.png', output)
 
+    for line in output:
+        print [int(number) for number in line.tolist()]
+
     return output
 
 
@@ -144,5 +147,37 @@ def first_pixel(image):
                 return i, j
 
 
-img = cv2.imread('images/2/0.png', 0)
-print chain_code(img, 4)
+def compact_chain(chain):
+    if len(chain) == 0:
+        return ''
+    compacted = chain[0]
+    for i in range(1, len(chain)):
+        if chain[i - 1] != chain[i]:
+            compacted += chain[i]
+    return compacted
+
+
+def count_directions(chain, dirs):
+    count = 0
+    for c in chain:
+        if c in dirs:
+            count += 1
+    return count
+
+
+def slopes(chain):
+    compacted = compact_chain(chain)
+    return count_directions(compacted, '1357')
+
+
+def direction_sum(chain):
+    compacted = compact_chain(chain)
+    s = 0
+    for c in compacted:
+        s += int(c)
+    return s
+
+img = cv2.imread('images/9/3.png', 0)
+chain = chain_code(img, 4)
+print chain
+print direction_sum(chain)

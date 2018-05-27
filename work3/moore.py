@@ -13,7 +13,7 @@ def moore_boundary(image):
     for index in path:
         output[index] = 255
 
-    return output
+    return output, path
 
 
 def first_pixel(image):
@@ -138,12 +138,16 @@ def eccentricity(image):
     return float(hor) / float(ver)
 
 
-img = cv2.imread('images/1/100.png', 0)
-output = moore_boundary(img)
+def boundary_length(path):
+    return len(path)
+
+img = cv2.imread('images/0/0.png', 0)
+output, path = moore_boundary(img)
 # cv2.imshow('output', output)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 # dia, i = max_diameter_horizontal(output)
 # dia, i = max_diameter_vertical(output)
 # print dia, i
-print eccentricity(output)
+# print eccentricity(output)
+print boundary_length(path)
