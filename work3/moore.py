@@ -13,9 +13,7 @@ def moore_boundary(image):
     for index in path:
         output[index] = 255
 
-    cv2.imshow('output', output)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return output
 
 
 def first_pixel(image):
@@ -53,14 +51,14 @@ def boundary(start, image):
 
 def find_next_neighbor(image, bi, ci):
     diffs = [
-        (0, -1),   # Left
+        (0, -1),  # Left
         (-1, -1),  # Top Left
-        (-1, 0),   # Top
-        (-1, 1),   # Top Right
-        (0, 1),    # Right
-        (1, 1),    # Bottom Right
-        (1, 0),    # Bottom
-        (1, -1)    # Bottom Left
+        (-1, 0),  # Top
+        (-1, 1),  # Top Right
+        (0, 1),  # Right
+        (1, 1),  # Bottom Right
+        (1, 0),  # Bottom
+        (1, -1)  # Bottom Left
     ]
 
     # Find index
@@ -89,5 +87,44 @@ def find_next_neighbor(image, bi, ci):
     return None, None
 
 
-img = cv2.imread('images/3/0.png', 0)
-moore_boundary(img)
+def max_diameter(image):
+    n = image.shape[0]
+    max_dia = 0
+    max_i = -1
+    for i in range(n):
+        dia = diameter(image, i)
+        if dia is not None and dia > max_dia:
+            max_dia = dia
+            max_i = i
+    return max_dia, max_i
+
+
+def diameter(image, i):
+    n = image.shape[0]
+
+    j = 0
+    while j < n and image[i, j] == 0:
+        j += 1
+    if j >= n:
+        return None
+    first = j
+
+    j = image.shape[0] - 1
+    while j >= 0 and image[i, j] == 0:
+        j -= 1
+    if j < 0:
+        return None
+    last = j
+
+    return last - first + 1
+
+
+img = cv2.imread('images/4/0.png', 0)
+output = moore_boundary(img)
+for line in output:
+    print [int(number) for number in line.tolist()]
+# cv2.imshow('output', output)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+dia, i = max_diameter(output)
+print dia, i
