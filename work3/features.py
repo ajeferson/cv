@@ -1,7 +1,6 @@
-import cv2
 from moore import moore_boundary
 from chain_code import chain_code
-from pre_processing import read_numbers, Number
+from pre_processing import read_numbers
 
 
 def max_diameter(image, d):
@@ -89,7 +88,6 @@ def direction_sum(chain):
         s += int(c)
     return s
 
-
 class DataPoint:
 
     def __init__(self, number):
@@ -123,14 +121,36 @@ class DataPoint:
         s += 'Direction Sum: %d\n' % self.direction_sum
         return s
 
-# img = cv2.imread('images/0/0.png', 0)
-# output, path = moore_boundary(img)
-# print path
-# chain = chain_code(img, 4)
-# print chain
-# print direction_sum(chain)
-numbers = read_numbers(1, 35)
-data_points = [DataPoint(n) for n in numbers]
-for point in data_points:
-    point.fit()
-print data_points[0]
+    def csv_line(self):
+        return '%d,%d,%f,%d,%d,%d,%d' %\
+               (self.width, self.height, self.eccentricity,
+                self.moore_length, self.slopes, self.direction_sum, self.y)
+
+    @staticmethod
+    def csv_header():
+        return '%s,%s,%s,%s,%s,%s,%s' %\
+               ('Width', 'Height', 'Eccentricity', 'Moore Length',
+                'Slopes', 'DirectionSum', 'Y')
+
+
+def write_csv(filename, data_points):
+    with open(filename, 'wb') as f:
+        if len(data_points) > 0:
+            f.write(data_points[0].csv_header())
+            f.write('\n')
+        for p in data_points:
+            f.write(p.csv_line())
+            f.write('\n')
+
+
+def generate_dataset():
+    numbers = read_numbers(-1, 35)
+    data_points = [DataPoint(n) for n in numbers]
+    for point in data_points:
+        point.fit()
+    write_csv('dataset.csv', data_points)
+
+
+print 'Generating dataset...'
+generate_dataset()
+print 'Done!'
