@@ -2,55 +2,111 @@ import cv2
 import numpy as np
 
 
-def chain_code(image, size):
-    mapped = map_image(image, size)
-    # for line in mapped:
-    #     print line
+def chain_code(image, m):
+    mapped = map_image(image, m, False)
 
     fp = first_pixel(mapped)
-    pixel = fp
-    visited = set()
-    visited.add(fp)
+    contours = boundary(fp, mapped, m)
 
+    # Build the chain
+    list_chain = build_chain(contours, m)
+    str_chain = [str(c) for c in list_chain]
+    chain = ''.join(str_chain)
+
+    return chain
+
+
+def build_chain(contours, m):
     chain = []
+    c = contours[:]  # Copy the list
+    c.append(c[0])  # Circular list
+
+    for i in range(1, len(c)):
+        next_dir = direction(c[i - 1], c[i], m)
+        chain.append(next_dir)
+    return chain
+
+
+def direction(origin, destination, m):
+    diffs = {
+        (0, m): 0,
+        (-m, m): 1,
+        (-m, 0): 2,
+        (-m, -m): 3,
+        (0, -m): 4,
+        (m, -m): 5,
+        (m, 0): 6,
+        (m, m): 7
+    }
+    res = (destination[0] - origin[0], destination[1] - origin[1])
+    return diffs[res]
+
+
+def boundary(start, image, m):
+    b0 = start
+    c0 = (start[0], start[1] - m)
+
+    b = [b0]
+
+    bi, ci = find_next_neighbor(image, b0, c0, m)
+
+    # Error
+    if bi is None:
+        return None
+
+    b.append(bi)
+
     while True:
-        direction, pixel = next_chain_code(mapped, pixel, size, visited)
-        if pixel is None:
+        bi, ci = find_next_neighbor(image, bi, ci, m)
+
+        if bi is None:
+            return None
+
+        if bi == b[0]:
+            return b
+        b.append(bi)
+
+
+def find_next_neighbor(image, bi, ci, m):
+    diffs = [
+        (0, -m),   # Left
+        (-m, -m),  # Top Left
+        (-m, 0),   # Top
+        (-m, m),   # Top Right
+        (0, m),    # Right
+        (m, m),    # Bottom Right
+        (m, 0),    # Bottom
+        (m, -m)    # Bottom Left
+    ]
+
+    # Find index
+    res = (ci[0] - bi[0], ci[1] - bi[1])
+    index = -1
+    for i in range(len(diffs)):
+        if diffs[i] == res:
+            index = i
             break
-        visited.add(pixel)
-        chain.append(direction)
 
-    print chain
+    # ci and bi are not neighbors
+    if index < 0:
+        return
 
-
-    # cv2.imshow('output', mapped)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    # cv2.imwrite('mapped.png', mapped)
-
-
-def next_chain_code(image, cp, s, visited):
+    c = 0
     n = image.shape[0]
-    if cp[1] + s < n and image[cp[0], cp[1] + s] != 0 and not (cp[0], cp[1] + s) in visited:
-        return 0, (cp[0], cp[1] + s)
-    elif cp[0] - s < n and image[cp[0] - s, cp[1]] != 0 and not (cp[0] - s, cp[1]) in visited:
-        return 2, (cp[0] - s, cp[1])
-    elif cp[1] - s < n and image[cp[0], cp[1] - s] != 0 and not (cp[0], cp[1] - s) in visited:
-        return 4, (cp[0], cp[1] - s)
-    elif cp[0] + s < n and image[cp[0] + s, cp[1]] != 0 and not (image[cp[0] + s, cp[1]]) in visited:
-        return 6, (cp[0] + s, cp[1])
-    elif cp[0] - s < n and cp[1] + s < n and image[cp[0] - s, cp[1] + s] != 0  and not (cp[0] - s, cp[1] + s) in visited:
-        return 1, (cp[0] - s, cp[1] + s)
-    elif cp[0] - s < n and cp[1] - s < n and image[cp[0] - s, cp[1] - s] != 0and not (cp[0] - s, cp[1] - s) in visited:
-        return 3, (cp[0] - s, cp[1] - s)
-    elif cp[0] + s < n and cp[1] - s < n and image[cp[0] + s, cp[1] - s] != 0 and not (cp[0] + s, cp[1] - s) in visited:
-        return 5, (cp[0] + s, cp[1] - s)
-    elif cp[0] + s < n and cp[1] + s < n and image[cp[0] + s, cp[1] + s] != 0 and not (cp[0] + s, cp[1] + s) in visited:
-        return 7, (cp[0] + s, cp[1] + s)
+    while c < 9:
+        neighbor = (bi[0] + diffs[index][0], bi[1] + diffs[index][1])
+        if neighbor[0] < n and neighbor[1] < n and image[neighbor] != 0:
+            previous = (bi[0] + diffs[index - 1][0], bi[1] + diffs[index - 1][1])
+            return neighbor, previous
+        index += 1
+        if index == len(diffs):
+            index = 0
+        c += 1
+
     return None, None
 
 
-def map_image(image, size):
+def map_image(image, size, write):
     n = image.shape[0]
     guides = [i for i in range(0, n, size)]
 
@@ -74,6 +130,9 @@ def map_image(image, size):
                 yk -= 1
                 output[guides[xk], guides[yk]] = 255
 
+    if write:
+        cv2.imwrite('mapped.png', output)
+
     return output
 
 
@@ -85,5 +144,5 @@ def first_pixel(image):
                 return i, j
 
 
-img = cv2.imread('images/6/0.png', 0)
-chain_code(img, 4)
+img = cv2.imread('images/2/0.png', 0)
+print chain_code(img, 4)
