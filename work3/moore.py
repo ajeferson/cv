@@ -132,13 +132,18 @@ def diameter(image, i, d):
     return last - first + 1
 
 
-img = cv2.imread('images/4/0.png', 0)
+def eccentricity(image):
+    hor = max_diameter_horizontal(image)[0]
+    ver = max_diameter_vertical(image)[0]
+    return float(hor) / float(ver)
+
+
+img = cv2.imread('images/1/100.png', 0)
 output = moore_boundary(img)
-for line in output:
-    print [int(number) for number in line.tolist()]
 # cv2.imshow('output', output)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 # dia, i = max_diameter_horizontal(output)
-dia, i = max_diameter_vertical(output)
-print dia, i
+# dia, i = max_diameter_vertical(output)
+# print dia, i
+print eccentricity(output)
