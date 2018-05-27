@@ -114,23 +114,23 @@ class DataPoint:
     def __str__(self):
         s = '----- %d -----\n' % self.y
         s += 'Width: %d\n' % self.width
-        s += 'Height: %d\n' % self.height
-        s += 'Eccentricity: %f\n' % self.eccentricity
+        # s += 'Height: %d\n' % self.height
+        # s += 'Eccentricity: %f\n' % self.eccentricity
         s += 'Moore Length: %d\n' % self.moore_length
         s += 'Slopes: %d\n' % self.slopes
         s += 'Direction Sum: %d\n' % self.direction_sum
         return s
 
     def csv_line(self):
-        return '%d,%d,%f,%d,%d,%d,%d' %\
-               (self.width, self.height, self.eccentricity,
-                self.moore_length, self.slopes, self.direction_sum, self.y)
+        return '%d,%d,%d,%d,%d' %\
+               (self.width, self.moore_length,
+                self.slopes, self.direction_sum, self.y)
 
     @staticmethod
     def csv_header():
-        return '%s,%s,%s,%s,%s,%s,%s' %\
-               ('Width', 'Height', 'Eccentricity', 'Moore Length',
-                'Slopes', 'DirectionSum', 'Y')
+        return '%s,%s,%s,%s,%s' %\
+               ('Width', 'Moore Length', 'Slopes',
+                'DirectionSum', 'Y')
 
 
 def write_csv(filename, data_points):
