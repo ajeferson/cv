@@ -34,4 +34,4 @@ def sobel(filename):
     cv2.imwrite('sobel_%s' % filename, output)
 
 
-sobel('goku.jpg')
+sobel('bridge.jpg')

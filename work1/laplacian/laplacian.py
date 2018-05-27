@@ -42,14 +42,6 @@ def laplacian(filename, size, center):
                 kr += 1
             output[i, j] = s + 100
 
-    # for x in range(1, 511):
-    #         for y in range(1, 511):
-    #             output[x, y] = (media[x, y] * -8 + media[x, y-1] + media[x-1, y] +  media[x+1, y] + media[x, y+1] +
-    #                          media[x-1, y-1] + media[x+1, y-1] + media[x-1, y+1] + media[x+1, y+1])
-    #             output[x, y] += 100
-    #
-    # print output
-
     # Displays the output
     cv2.imshow('output', output)
     cv2.waitKey(0)
@@ -59,7 +51,7 @@ def laplacian(filename, size, center):
     cv2.imwrite('laplacian_output_size_%d_center_%d.png' % (size, center), output)
 
 print 'Calculating...'
-laplacian('goku.jpg', 5, -8)
+laplacian('pumpkin.jpg', 3, -8)
 print 'Done!'
 
 exit(1)

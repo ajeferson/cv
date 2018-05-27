@@ -15,5 +15,5 @@ def histogram(filename):
     plt.show()
 
 
-histogram('lena.png')
+histogram('cells.jpg')
 

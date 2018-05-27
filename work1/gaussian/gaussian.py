@@ -62,7 +62,7 @@ def gaussian(filename, window, sigma):
     cv2.imwrite('gaussian_output_window_%d_sigma_%d.png' % (window, sigma), output)
 
 print 'Calculating...'
-gaussian('lena.png', 19, 9)
+gaussian('lena.png', 3, 32)
 print 'Done!'
 
 exit(1)
