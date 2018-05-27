@@ -87,30 +87,43 @@ def find_next_neighbor(image, bi, ci):
     return None, None
 
 
-def max_diameter(image):
+def max_diameter(image, d):
     n = image.shape[0]
     max_dia = 0
     max_i = -1
     for i in range(n):
-        dia = diameter(image, i)
+        dia = diameter(image, i, d)
         if dia is not None and dia > max_dia:
             max_dia = dia
             max_i = i
     return max_dia, max_i
 
 
-def diameter(image, i):
+def max_diameter_horizontal(image):
+    return max_diameter(image, 0)
+
+
+def max_diameter_vertical(image):
+    return max_diameter(image, 1)
+
+
+def diameter(image, i, d):
     n = image.shape[0]
 
+    def pixel(pi, pj, pd):
+        if pd == 0:
+            return image[pi, pj]
+        return image[pj, pi]
+
     j = 0
-    while j < n and image[i, j] == 0:
+    while j < n and pixel(i, j, d) == 0:
         j += 1
     if j >= n:
         return None
     first = j
 
     j = image.shape[0] - 1
-    while j >= 0 and image[i, j] == 0:
+    while j >= 0 and pixel(i, j, d) == 0:
         j -= 1
     if j < 0:
         return None
@@ -126,5 +139,6 @@ for line in output:
 # cv2.imshow('output', output)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
-dia, i = max_diameter(output)
+# dia, i = max_diameter_horizontal(output)
+dia, i = max_diameter_vertical(output)
 print dia, i
